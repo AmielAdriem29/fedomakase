@@ -190,4 +190,10 @@ set -euo pipefail
 exec /usr/share/omarchy-fedora/port/install.sh --user-configs --force-configs "$@"
 EOF
   chmod 755 "$src/bin/omarchy-reinstall-configs"
+
+  # 10. Lutris runs with set -e, and umu-launcher has no Fedora package.
+  patch_literal "$src/bin/omarchy-install-gaming-lutris" \
+    "omarchy-pkg-add lutris umu-launcher wine-staging" \
+    "omarchy-pkg-add lutris wine-staging" \
+    "lutris without umu-launcher"
 }

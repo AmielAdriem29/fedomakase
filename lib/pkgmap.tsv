@@ -2,7 +2,9 @@
 # Format: <arch-name><TAB><kind>:<target>
 #   dnf:<names...>      install these RPMs (space separated)
 #   flatpak:<app-id>    install from Flathub
+#   copr:<owner/project> <names...>   enable this COPR, then install these RPMs
 #   none:<reason>       no Fedora equivalent; the shim explains and fails
+#   skip:<reason>       optional add-on with no equivalent; the shim explains and carries on
 # Names that are not listed are tried with dnf under the same name.
 # Edit freely: this file is installed to /usr/share/omarchy-fedora/pkgmap.tsv.
 
@@ -147,3 +149,134 @@ nvidia-dkms	none:use RPM Fusion's akmod-nvidia on Fedora
 nvidia-open-dkms	none:use RPM Fusion's akmod-nvidia on Fedora
 nvidia-utils	none:use RPM Fusion's xorg-x11-drv-nvidia on Fedora
 lib32-nvidia-utils	dnf:xorg-x11-drv-nvidia-libs.i686
+
+# Omarchy install menu: same name on Fedora
+alacritty	dnf:alacritty
+foot	dnf:foot
+kitty	dnf:kitty
+firefox	dnf:firefox
+flatpak	dnf:flatpak
+fprintd	dnf:fprintd
+helix	dnf:helix
+php	dnf:php
+composer	dnf:composer
+rlwrap	dnf:rlwrap
+pam-u2f	dnf:pam-u2f
+libfido2	dnf:libfido2
+freerdp	dnf:freerdp
+wine-mono	dnf:wine-mono
+winetricks	dnf:winetricks
+ollama	dnf:ollama
+tailscale	dnf:tailscale
+wtype	dnf:wtype
+libappindicator-gtk3	dnf:libappindicator-gtk3
+
+# Omarchy install menu: renamed on Fedora
+vim	dnf:vim-enhanced
+php-sqlite	dnf:php-pdo
+xdebug	dnf:php-pecl-xdebug3
+python-gpgme	dnf:python3-gpg
+python-protobuf	dnf:python3-protobuf
+wine-staging	dnf:wine
+wine-gecko	dnf:mingw32-wine-gecko mingw64-wine-gecko
+openbsd-netcat	dnf:netcat
+libyaml	dnf:libyaml libyaml-devel
+openssh	dnf:openssh-server openssh-clients
+lib32-vulkan-intel	dnf:mesa-vulkan-drivers.i686
+lib32-vulkan-radeon	dnf:mesa-vulkan-drivers.i686
+ollama-cuda	dnf:ollama
+ollama-rocm	dnf:ollama
+lib32-nvidia-580xx-utils	dnf:xorg-x11-drv-nvidia-580xx-libs.i686
+
+# Omarchy install menu: Flathub
+microsoft-edge-stable-bin	flatpak:com.microsoft.Edge
+zen-browser-bin	flatpak:app.zen_browser.zen
+sublime-text-4	flatpak:com.sublimehq.SublimeText
+lmstudio-bin	flatpak:ai.lmstudio.lm-studio
+sunshine	flatpak:dev.lizardbyte.app.Sunshine
+
+# Omarchy install menu: COPR
+ghostty	copr:scottames/ghostty ghostty
+xpadneo-dkms	copr:shdwchn10/xpadneo akmod-xpadneo
+supergfxctl	copr:lukenukem/asus-linux supergfxctl
+
+# RetroArch comes from Flathub, and its online updater fetches cores and assets.
+libretro-beetle-pce	flatpak:org.libretro.RetroArch
+libretro-beetle-pce-fast	flatpak:org.libretro.RetroArch
+libretro-beetle-psx	flatpak:org.libretro.RetroArch
+libretro-beetle-psx-hw	flatpak:org.libretro.RetroArch
+libretro-beetle-supergrafx	flatpak:org.libretro.RetroArch
+libretro-blastem	flatpak:org.libretro.RetroArch
+libretro-bsnes	flatpak:org.libretro.RetroArch
+libretro-bsnes-hd	flatpak:org.libretro.RetroArch
+libretro-cap32-git	flatpak:org.libretro.RetroArch
+libretro-core-info	flatpak:org.libretro.RetroArch
+libretro-database-git	flatpak:org.libretro.RetroArch
+libretro-desmume	flatpak:org.libretro.RetroArch
+libretro-dolphin	flatpak:org.libretro.RetroArch
+libretro-fbneo-git	flatpak:org.libretro.RetroArch
+libretro-flycast	flatpak:org.libretro.RetroArch
+libretro-gambatte	flatpak:org.libretro.RetroArch
+libretro-genesis-plus-gx	flatpak:org.libretro.RetroArch
+libretro-kronos	flatpak:org.libretro.RetroArch
+libretro-mame	flatpak:org.libretro.RetroArch
+libretro-melonds	flatpak:org.libretro.RetroArch
+libretro-mesen	flatpak:org.libretro.RetroArch
+libretro-mesen-s	flatpak:org.libretro.RetroArch
+libretro-mgba	flatpak:org.libretro.RetroArch
+libretro-mupen64plus-next	flatpak:org.libretro.RetroArch
+libretro-nestopia	flatpak:org.libretro.RetroArch
+libretro-overlays	flatpak:org.libretro.RetroArch
+libretro-parallel-n64	flatpak:org.libretro.RetroArch
+libretro-picodrive	flatpak:org.libretro.RetroArch
+libretro-play	flatpak:org.libretro.RetroArch
+libretro-ppsspp	flatpak:org.libretro.RetroArch
+libretro-sameboy	flatpak:org.libretro.RetroArch
+libretro-scummvm	flatpak:org.libretro.RetroArch
+libretro-shaders-slang	flatpak:org.libretro.RetroArch
+libretro-snes9x	flatpak:org.libretro.RetroArch
+libretro-uae-git	flatpak:org.libretro.RetroArch
+libretro-vice-x128-git	flatpak:org.libretro.RetroArch
+libretro-vice-x64dtv-git	flatpak:org.libretro.RetroArch
+libretro-vice-x64-git	flatpak:org.libretro.RetroArch
+libretro-vice-x64sc-git	flatpak:org.libretro.RetroArch
+libretro-vice-xcbm2-git	flatpak:org.libretro.RetroArch
+libretro-vice-xcbm5x0-git	flatpak:org.libretro.RetroArch
+libretro-vice-xpet-git	flatpak:org.libretro.RetroArch
+libretro-vice-xplus4-git	flatpak:org.libretro.RetroArch
+libretro-vice-xscpu64-git	flatpak:org.libretro.RetroArch
+libretro-vice-xvic-git	flatpak:org.libretro.RetroArch
+libretro-yabause	flatpak:org.libretro.RetroArch
+retroarch-assets-glui	flatpak:org.libretro.RetroArch
+retroarch-assets-ozone	flatpak:org.libretro.RetroArch
+retroarch-assets-xmb	flatpak:org.libretro.RetroArch
+retroarch-joypad-autoconfig-git	flatpak:org.libretro.RetroArch
+
+# Optional add-ons: the main app still installs without them
+1password-cli	skip:use 1Password's own RPM repo for the CLI
+bitwarden-cli	skip:not packaged for Fedora (try npm install -g @bitwarden/cli)
+dropbox-cli	skip:the Dropbox Flatpak has no separate CLI
+nautilus-dropbox	skip:needs the RPM Fusion dropbox package, not the Flatpak
+omazed	skip:Omarchy-only Zed theme helper (no Fedora build)
+
+# Omarchy install menu: no Fedora substitute
+brave-origin-bin	none:not packaged for Fedora
+cursor-bin	none:not packaged for Fedora
+grok-bot	none:not packaged for Fedora
+hermes-desktop	none:not packaged for Fedora
+nordvpn-bin	none:not packaged for Fedora
+once-bin	none:not packaged for Fedora
+openai-codex-desktop	none:not packaged for Fedora
+openclaw	none:not packaged for Fedora
+perplexity	none:not packaged for Fedora
+symfony-cli	none:not packaged for Fedora
+t3code-bin	none:not packaged for Fedora
+voxtype-bin	none:not packaged for Fedora
+omarchy-emacs	none:Omarchy-only package (no Fedora build)
+umu-launcher	none:only in personal COPRs (zhangyaoan/umu-launcher has it)
+ttf-bitstream-vera-mono-nerd	none:not packaged for Fedora; get it from nerdfonts.com
+ttf-cascadia-mono-nerd	none:not packaged for Fedora; get it from nerdfonts.com
+ttf-firacode-nerd	none:not packaged for Fedora; get it from nerdfonts.com
+ttf-iosevka-nerd	none:not packaged for Fedora; get it from nerdfonts.com
+ttf-meslo-nerd	none:not packaged for Fedora; get it from nerdfonts.com
+ttf-victor-mono-nerd	none:not packaged for Fedora; get it from nerdfonts.com

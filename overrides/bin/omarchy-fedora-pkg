@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# omarchy:summary=Fedora package backend for the omarchy-pkg-* commands (dnf + Flathub)
+# omarchy:summary=Fedora package backend for the omarchy-pkg-* commands (dnf, COPR + Flathub)
 # omarchy:args=<resolve|add|present|missing|drop> <packages...>
 # omarchy:hidden=true
 #
 # Omarchy's scripts name Arch packages. This translates each name through
-# /usr/share/omarchy-fedora/pkgmap.tsv and acts with dnf or flatpak instead.
+# /usr/share/omarchy-fedora/pkgmap.tsv and acts with dnf, COPR or flatpak instead.
 
 set -uo pipefail
 
@@ -35,6 +35,16 @@ flatpak_ready() {
     flatpak remote-add --user --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 }
 
+# A COPR target is "<owner/project> <names...>"; prints just the names.
+copr_pkgs() {
+  printf '%s\n' "${1#* }"
+}
+
+rpm_present() {
+  # --whatprovides does not understand name.arch, so try the plain query first.
+  rpm -q "$1" &>/dev/null || rpm -q --whatprovides "$1" &>/dev/null
+}
+
 is_present() {
   local spec kind target pkg
   spec=$(resolve "$1")
@@ -43,11 +53,16 @@ is_present() {
   case $kind in
     dnf)
       for pkg in $target; do
-        rpm -q --whatprovides "$pkg" &>/dev/null || return 1
+        rpm_present "$pkg" || return 1
+      done
+      ;;
+    copr)
+      for pkg in $(copr_pkgs "$target"); do
+        rpm_present "$pkg" || return 1
       done
       ;;
     flatpak) flatpak info "$target" &>/dev/null ;;
-    none) return 1 ;;
+    none|skip) return 1 ;;
   esac
 }
 
@@ -61,11 +76,17 @@ add() {
     target=${spec#*:}
     case $kind in
       dnf) read -ra parts <<<"$target"; dnf_pkgs+=("${parts[@]}") ;;
+      copr)
+        as_root dnf copr enable -y "${target%% *}" || failed=1
+        read -ra parts <<<"$(copr_pkgs "$target")"
+        dnf_pkgs+=("${parts[@]}")
+        ;;
       flatpak) flatpaks+=("$target") ;;
       none)
         echo -e "\033[33m'$name' has no Fedora package: $target\033[0m" >&2
         failed=1
         ;;
+      skip) echo -e "\033[33mSkipping '$name': $target\033[0m" >&2 ;;
     esac
   done
 
@@ -73,12 +94,14 @@ add() {
     as_root dnf install -y "${dnf_pkgs[@]}" || failed=1
   fi
   if (( ${#flatpaks[@]} )); then
+    # Many RetroArch names map to one app, so install each app once.
+    readarray -t flatpaks < <(printf '%s\n' "${flatpaks[@]}" | sort -u)
     flatpak_ready && flatpak install --user -y --noninteractive flathub "${flatpaks[@]}" || failed=1
   fi
 
   for name in "$@"; do
     spec=$(resolve "$name")
-    [[ ${spec%%:*} == none ]] && continue
+    [[ ${spec%%:*} == none || ${spec%%:*} == skip ]] && continue
     if ! is_present "$name"; then
       echo -e "\033[31mError: Package '$name' did not install\033[0m" >&2
       failed=1
@@ -96,9 +119,13 @@ drop() {
     target=${spec#*:}
     case $kind in
       dnf) read -ra parts <<<"$target"; dnf_pkgs+=("${parts[@]}") ;;
+      copr) read -ra parts <<<"$(copr_pkgs "$target")"; dnf_pkgs+=("${parts[@]}") ;;
       flatpak) flatpaks+=("$target") ;;
     esac
   done
+  if (( ${#flatpaks[@]} )); then
+    readarray -t flatpaks < <(printf '%s\n' "${flatpaks[@]}" | sort -u)
+  fi
   (( ${#dnf_pkgs[@]} )) && as_root dnf remove -y "${dnf_pkgs[@]}"
   (( ${#flatpaks[@]} )) && flatpak uninstall --user -y --noninteractive "${flatpaks[@]}"
   return 0

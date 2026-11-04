@@ -70,7 +70,7 @@ Omarchy itself already avoids forcing NVIDIA's VA-API driver when the iGPU drive
 
 ## Not included
 
-These are Arch-only builds from Omarchy's own repository with no Fedora package: Aether, cliamp, herdr, Omawrite, Omacut, Omasnap, ttfx, the titlebar plugin for floating workspaces, Omarchy's Neovim package (install LazyVim yourself), and the mise bundle of AI CLIs. Their keybinds (for example `SUPER+CTRL+RETURN` for herdr or `SUPER+SHIFT+W` for Omawrite) simply do nothing; rebind them in `~/.config/hypr/bindings.lua` if you want. Screen-share uses the stock picker instead of Omarchy's preview picker. The optional install menus work where `pkgmap.tsv` has a dnf or Flathub equivalent.
+These are Arch-only builds from Omarchy's own repository with no Fedora package: Aether, cliamp, herdr, Omawrite, Omacut, Omasnap, ttfx, the titlebar plugin for floating workspaces, Omarchy's Neovim package (install LazyVim yourself), and the mise bundle of AI CLIs. Their keybinds (for example `SUPER+CTRL+RETURN` for herdr or `SUPER+SHIFT+W` for Omawrite) simply do nothing; rebind them in `~/.config/hypr/bindings.lua` if you want. Screen-share uses the stock picker instead of Omarchy's preview picker. The optional install menus work where `pkgmap.tsv` has a dnf, COPR or Flathub equivalent.
 
 ## Uninstall
 
