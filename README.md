@@ -22,7 +22,7 @@ Useful options:
 |---|---|
 | `--nvidia-driver` | Enables RPM Fusion and installs `akmod-nvidia` (skip if you already have it) |
 | `--build-quickshell` | Compiles Quickshell from source instead of using the COPR |
-| `--no-tools` | Skips the optional CLI tools (btop, eza, starship, lazygit, ...) |
+| `--no-tools` | Skips the optional CLI tools (btop, eza, fzf, ripgrep, ...) |
 | `--no-bashrc` | Doesn't hook Omarchy's aliases and prompt into `~/.bashrc` |
 | `--ref <tag>` | Installs a different Omarchy release |
 

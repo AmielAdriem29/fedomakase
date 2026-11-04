@@ -67,8 +67,8 @@ DESKTOP_PACKAGES=(
 
 # Command-line tools Omarchy's shell config and TUIs expect.
 TOOL_PACKAGES=(
-  btop bat eza fd-find fzf ripgrep zoxide starship
-  fastfetch tmux neovim lazygit tldr
+  btop bat eza fd-find fzf ripgrep zoxide
+  fastfetch tmux neovim tldr
   plocate less man-db whois
   vips yt-dlp ffmpeg-free
   inxi

@@ -56,7 +56,7 @@ dotnet-runtime	dnf:dotnet-runtime-8.0
 lib32-mesa	dnf:mesa-dri-drivers.i686 mesa-vulkan-drivers.i686
 vulkan-intel	dnf:mesa-vulkan-drivers
 vulkan-radeon	dnf:mesa-vulkan-drivers
-intel-media-driver	dnf:intel-media-driver
+intel-media-driver	dnf:libva-intel-media-driver
 libva-intel-driver	dnf:libva-intel-media-driver
 libva-nvidia-driver	dnf:libva-nvidia-driver
 fwupd	dnf:fwupd
@@ -121,8 +121,8 @@ superwhisper-bin	none:not packaged for Fedora
 voxtype	none:not packaged for Fedora
 gpu-screen-recorder	flatpak:com.dec05eba.gpu_screen_recorder
 lazydocker	none:not packaged for Fedora (try mise or the GitHub release)
-mise-bin	dnf:mise
-mise	dnf:mise
+mise-bin	none:not packaged for Fedora (COPR jdxcode/mise has it)
+mise	none:not packaged for Fedora (COPR jdxcode/mise has it)
 usage	none:not packaged for Fedora
 dua-cli	none:not packaged for Fedora (try cargo install dua-cli)
 asdcontrol	none:Apple display helper, not needed here

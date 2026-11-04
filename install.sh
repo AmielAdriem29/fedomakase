@@ -12,7 +12,7 @@
 #   --ref <tag>          Omarchy release to install (default: v4.0.6)
 #   --build-quickshell   Compile Quickshell from source instead of using the COPR
 #   --nvidia-driver      Also set up RPM Fusion and install akmod-nvidia
-#   --no-tools           Skip the optional CLI tools (btop, eza, starship, ...)
+#   --no-tools           Skip the optional CLI tools (btop, eza, fzf, ...)
 #   --no-bashrc          Don't hook Omarchy's shell aliases into ~/.bashrc
 #   --skip-update-check  Install even if Fedora updates are pending (not recommended)
 #   --update             Re-sync Omarchy files and configs only (no package installs)
