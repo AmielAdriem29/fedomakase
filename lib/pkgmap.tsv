@@ -3,6 +3,7 @@
 #   dnf:<names...>      install these RPMs (space separated)
 #   flatpak:<app-id>    install from Flathub
 #   copr:<owner/project> <names...>   enable this COPR, then install these RPMs
+#   repo:<repo-file-url> <names...>   add this vendor repo, then install these RPMs
 #   none:<reason>       no Fedora equivalent; the shim explains and fails
 #   skip:<reason>       optional add-on with no equivalent; the shim explains and carries on
 # Names that are not listed are tried with dnf under the same name.
@@ -94,7 +95,7 @@ obs-studio	dnf:obs-studio
 xournalpp	dnf:xournalpp
 steam	dnf:steam
 lutris	dnf:lutris
-brave-bin	flatpak:com.brave.Browser
+brave-bin	repo:https://brave-browser-rpm-release.s3.brave.com/brave-browser.repo brave-browser
 google-chrome	flatpak:com.google.Chrome
 helium-browser-bin	none:not packaged for Fedora
 dropbox	flatpak:com.dropbox.Client

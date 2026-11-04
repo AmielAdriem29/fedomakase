@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# omarchy:summary=Fedora package backend for the omarchy-pkg-* commands (dnf, COPR + Flathub)
+# omarchy:summary=Fedora package backend for the omarchy-pkg-* commands (dnf, COPR, vendor repos + Flathub)
 # omarchy:args=<resolve|add|present|missing|drop> <packages...>
 # omarchy:hidden=true
 #
 # Omarchy's scripts name Arch packages. This translates each name through
-# /usr/share/omarchy-fedora/pkgmap.tsv and acts with dnf, COPR or flatpak instead.
+# /usr/share/omarchy-fedora/pkgmap.tsv and acts with dnf, COPR, a vendor repo or flatpak instead.
 
 set -uo pipefail
 
@@ -35,8 +35,8 @@ flatpak_ready() {
   flatpak remote-add --user --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 }
 
-# A COPR target is "<owner/project> <names...>"; prints just the names.
-copr_pkgs() {
+# copr and repo targets are "<source> <names...>"; prints just the names.
+source_pkgs() {
   printf '%s\n' "${1#* }"
 }
 
@@ -56,8 +56,8 @@ is_present() {
         rpm_present "$pkg" || return 1
       done
       ;;
-    copr)
-      for pkg in $(copr_pkgs "$target"); do
+    copr|repo)
+      for pkg in $(source_pkgs "$target"); do
         rpm_present "$pkg" || return 1
       done
       ;;
@@ -78,7 +78,12 @@ add() {
       dnf) read -ra parts <<<"$target"; dnf_pkgs+=("${parts[@]}") ;;
       copr)
         as_root dnf copr enable -y "${target%% *}" || failed=1
-        read -ra parts <<<"$(copr_pkgs "$target")"
+        read -ra parts <<<"$(source_pkgs "$target")"
+        dnf_pkgs+=("${parts[@]}")
+        ;;
+      repo)
+        as_root dnf config-manager addrepo --overwrite --from-repofile="${target%% *}" || failed=1
+        read -ra parts <<<"$(source_pkgs "$target")"
         dnf_pkgs+=("${parts[@]}")
         ;;
       flatpak) flatpaks+=("$target") ;;
@@ -119,7 +124,7 @@ drop() {
     target=${spec#*:}
     case $kind in
       dnf) read -ra parts <<<"$target"; dnf_pkgs+=("${parts[@]}") ;;
-      copr) read -ra parts <<<"$(copr_pkgs "$target")"; dnf_pkgs+=("${parts[@]}") ;;
+      copr|repo) read -ra parts <<<"$(source_pkgs "$target")"; dnf_pkgs+=("${parts[@]}") ;;
       flatpak) flatpaks+=("$target") ;;
     esac
   done
