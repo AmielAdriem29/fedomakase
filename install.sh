@@ -665,6 +665,14 @@ install_user_configs() {
     [[ -f $m ]] && touch "$HOME/.local/state/omarchy/migrations/$(basename "$m")"
   done
 
+  # KDE's Xwayland video bridge autostarts in every session, and Hyprland shows
+  # it as a blank window that won't close. Keep it to KDE.
+  local bridge=org.kde.xwaylandvideobridge.desktop
+  if [[ -f /etc/xdg/autostart/$bridge && ! -e $HOME/.config/autostart/$bridge ]]; then
+    mkdir -p "$HOME/.config/autostart"
+    sed '0,/^\[Desktop Entry\]$/s//&\nOnlyShowIn=KDE;/' "/etc/xdg/autostart/$bridge" >"$HOME/.config/autostart/$bridge"
+  fi
+
   # uwsm reads compositor-specific env from here; reuse the session env.
   mkdir -p "$HOME/.config/uwsm"
   if [[ ! -f $HOME/.config/uwsm/env-hyprland ]] || grep -q omarchy-fedora "$HOME/.config/uwsm/env-hyprland"; then

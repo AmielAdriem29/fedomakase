@@ -67,6 +67,9 @@ if (( remove_packages )); then
   sudo dnf copr disable -y errornointernet/quickshell 2>/dev/null
 fi
 
+# Let KDE's video bridge follow the system autostart again.
+rm -f ~/.config/autostart/org.kde.xwaylandvideobridge.desktop
+
 # ~/.bashrc hook.
 if grep -q '>>> omarchy-fedora >>>' ~/.bashrc 2>/dev/null; then
   sed -i '/^# >>> omarchy-fedora >>>$/,/^# <<< omarchy-fedora <<<$/d' ~/.bashrc
