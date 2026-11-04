@@ -48,6 +48,7 @@ KDE Plasma and its settings are left alone, so it stays available as a fallback 
 | omacalc | `omacalc` shim that opens GNOME Calculator |
 | Web apps fall back to `chromium.desktop` | Also finds Fedora's `chromium-browser.desktop` or Google Chrome |
 | Sets Desktop/Templates/Public to `$HOME`, Chromium as default browser | Left as they are, since those would also change KDE |
+| Omarchy and Arch logos in fastfetch, the menu and its bar button | Fedora logo; the menu's Arch wiki link opens Fedora's docs |
 
 ## Hybrid graphics (Intel + NVIDIA)
 

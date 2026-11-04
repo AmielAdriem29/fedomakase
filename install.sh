@@ -651,7 +651,10 @@ install_user_configs() {
   mkdir -p "$HOME/.config/omarchy/branding" "$HOME/.local/state/omarchy/toggles/hypr" \
     "$HOME/.local/share/nautilus-python/extensions"
   [[ -f $HOME/.config/omarchy/branding/screensaver.txt ]] || cp "$d/logo.txt" "$HOME/.config/omarchy/branding/screensaver.txt"
-  [[ -f $HOME/.config/omarchy/branding/about.txt ]] || cp "$d/icon.txt" "$HOME/.config/omarchy/branding/about.txt"
+  # Swap in the Fedora logo unless you set your own About logo.
+  if [[ ! -f $HOME/.config/omarchy/branding/about.txt ]] || cmp -s "$HOME/.config/omarchy/branding/about.txt" "$d/icon-omarchy.txt"; then
+    cp "$d/icon.txt" "$HOME/.config/omarchy/branding/about.txt"
+  fi
   [[ -f $HOME/.local/state/omarchy/toggles/hypr/flags.lua ]] || cp "$d/default/hypr/toggles/flags.lua" "$HOME/.local/state/omarchy/toggles/hypr/flags.lua"
   cp -f "$d"/default/nautilus-python/extensions/*.py "$HOME/.local/share/nautilus-python/extensions/" 2>/dev/null || true
 

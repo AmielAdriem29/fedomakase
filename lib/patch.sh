@@ -196,4 +196,36 @@ EOF
     "omarchy-pkg-add lutris umu-launcher wine-staging" \
     "omarchy-pkg-add lutris wine-staging" \
     "lutris without umu-launcher"
+
+  # 11. Fedora logo in fastfetch and the Omarchy menu. Icons are spelled as
+  #     UTF-8 bytes so they survive editors and don't depend on the locale.
+  local arch_icon=$'\xf3\xb0\xa3\x87' omarchy_icon=$'\xee\xa4\x80' fedora_icon=$'\xef\x8c\x8a'
+  local menu="$src/default/omarchy/omarchy-menu.jsonc"
+  cp "$src/icon.txt" "$src/icon-omarchy.txt"   # lets the installer spot an untouched logo
+  cp "$PORT_DIR/overrides/branding/about.txt" "$src/icon.txt"
+  patch_literal "$src/etc/fastfetch/config.jsonc" \
+    '"color": { "1": "green" }' \
+    '"color": { "1": "blue" }' \
+    "fastfetch logo color"
+  patch_literal "$src/etc/fastfetch/config.jsonc" \
+    '"key": "\ue900 OS"' \
+    '"key": "\uf30a OS"' \
+    "fastfetch OS icon"
+  patch_literal "$src/shell/plugins/menu/BarWidget.qml" \
+    'text: "\ue900"' \
+    'text: "\uf30a"' \
+    "menu button icon"
+  patch_literal "$src/shell/plugins/menu/BarWidget.qml" \
+    'fontFamily: "omarchy"' \
+    'fontFamily: "JetBrainsMono Nerd Font"' \
+    "menu button font"
+  patch_literal "$menu" \
+    "\"learn.arch\": {\"icon\":\"$arch_icon\",\"label\":\"Arch\",\"action\":\"omarchy-launch-webapp 'https://wiki.archlinux.org/title/Main_page'\"}" \
+    "\"learn.arch\": {\"icon\":\"$fedora_icon\",\"label\":\"Fedora\",\"action\":\"omarchy-launch-webapp 'https://docs.fedoraproject.org/'\"}" \
+    "learn menu entry"
+  patch_literal "$menu" "\"icon\":\"$arch_icon\"" "\"icon\":\"$fedora_icon\"" "menu package icons"
+  patch_literal "$menu" \
+    "\"update.omarchy\": {\"icon\":\"$omarchy_icon\",\"iconFont\":\"omarchy\"," \
+    "\"update.omarchy\": {\"icon\":\"$fedora_icon\"," \
+    "menu update icon"
 }
