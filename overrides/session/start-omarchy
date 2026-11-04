@@ -1,0 +1,23 @@
+#!/bin/bash
+# Session entry point for "Omarchy (Fedora)" on the login screen.
+#
+# Loads machine-specific environment (GPU pinning for hybrid laptops) before
+# Hyprland starts, because Aquamarine picks its GPU before any Hyprland config
+# is read. Then hands off to uwsm, or runs Hyprland directly without it.
+
+[ -r /usr/share/omarchy/default/bash/env-bootstrap ] && . /usr/share/omarchy/default/bash/env-bootstrap
+
+# Files contain `export NAME=value` lines (also sourced by uwsm via env-hyprland).
+for env_file in /etc/omarchy-fedora/session.env "$HOME/.config/omarchy-fedora/session.env"; do
+  [ -r "$env_file" ] && . "$env_file"
+done
+
+uwsm_bin=$(command -v uwsm 2>/dev/null)
+if [ -n "$uwsm_bin" ] && ! grep -q 'Fedora port shim' "$uwsm_bin" 2>/dev/null; then
+  exec uwsm start -g -1 -e -D Hyprland hyprland.desktop
+fi
+
+if command -v start-hyprland >/dev/null; then
+  exec start-hyprland
+fi
+exec Hyprland

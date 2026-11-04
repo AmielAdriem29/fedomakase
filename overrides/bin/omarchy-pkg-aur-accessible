@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# omarchy:summary=Returns true if Flathub is reachable (Fedora port: stands in for the AUR check).
+
+curl -sf --connect-timeout 15 --retry 2 -o /dev/null https://dl.flathub.org/repo/summary.idx

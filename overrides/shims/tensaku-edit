@@ -1,0 +1,16 @@
+#!/bin/bash
+# Fedora port shim: Omarchy opens screenshots in Tensaku, which has no Fedora
+# build. Open them in Satty instead (Ctrl+S saves over the file, Ctrl+C copies).
+
+file=${1:?usage: tensaku-edit <image>}
+
+if command -v tensaku >/dev/null; then
+  exec tensaku "$@"
+fi
+
+if ! command -v satty >/dev/null; then
+  notify-send "Screenshot saved" "Install satty to annotate screenshots: sudo dnf install satty" 2>/dev/null
+  exec xdg-open "$file"
+fi
+
+exec satty --filename "$file" --output-filename "$file" --copy-command wl-copy --early-exit

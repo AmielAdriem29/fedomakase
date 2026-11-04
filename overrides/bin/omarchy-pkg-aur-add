@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# omarchy:summary=Install AUR packages (Fedora: mapped to dnf or Flathub where an equivalent exists)
+# omarchy:args=<packages...>
+
+exec omarchy-fedora-pkg add "$@"

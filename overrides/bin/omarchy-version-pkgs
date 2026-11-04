@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# omarchy:summary=Show when system packages were last upgraded (Fedora port)
+# omarchy:hidden=true
+
+last=$(dnf history list --reverse 2>/dev/null | awk -F'|' 'NR > 2 && $4 ~ /[0-9]{4}-/ { d = $4 } END { gsub(/^ +| +$/, "", d); print d }')
+[[ -n $last ]] && date -d "$last" "+%A, %B %d %Y at %H:%M" 2>/dev/null || echo "unknown"

@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# omarchy:summary=Print pending updates and exit 0 when there are any (Fedora port: dnf cache)
+# omarchy:hidden=true
+
+# Uses dnf's metadata cache (refreshed by dnf-makecache.timer) so the bar widget
+# never triggers a network refresh or needs root.
+updates=$(dnf check-update --cacheonly --quiet 2>/dev/null | awk 'NF == 3 && $1 ~ /\./ { print $1, $2 }')
+
+if [[ -n $updates ]]; then
+  count=$(wc -l <<<"$updates")
+  echo "$count Fedora package update(s) available"
+  exit 0
+fi
+
+exit 1

@@ -1,0 +1,127 @@
+#!/bin/bash
+
+# omarchy:summary=Fedora package backend for the omarchy-pkg-* commands (dnf + Flathub)
+# omarchy:args=<resolve|add|present|missing|drop> <packages...>
+# omarchy:hidden=true
+#
+# Omarchy's scripts name Arch packages. This translates each name through
+# /usr/share/omarchy-fedora/pkgmap.tsv and acts with dnf or flatpak instead.
+
+set -uo pipefail
+
+PKGMAP="${OMARCHY_FEDORA_PKGMAP:-/usr/share/omarchy-fedora/pkgmap.tsv}"
+
+# Prints "<kind>:<target>" for an Arch package name.
+resolve() {
+  local name=$1 line
+  if [[ -r $PKGMAP ]]; then
+    line=$(awk -F'\t' -v n="$name" '$1 == n { print $2; exit }' "$PKGMAP")
+    if [[ -n $line ]]; then
+      printf '%s\n' "$line"
+      return
+    fi
+  fi
+  # Unmapped: assume the Fedora package has the same name.
+  printf 'dnf:%s\n' "$name"
+}
+
+as_root() {
+  if (( EUID == 0 )); then "$@"; else sudo "$@"; fi
+}
+
+flatpak_ready() {
+  command -v flatpak >/dev/null || as_root dnf install -y flatpak || return 1
+  flatpak remote-list --columns=name 2>/dev/null | grep -qx flathub ||
+    flatpak remote-add --user --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+}
+
+is_present() {
+  local spec kind target pkg
+  spec=$(resolve "$1")
+  kind=${spec%%:*}
+  target=${spec#*:}
+  case $kind in
+    dnf)
+      for pkg in $target; do
+        rpm -q --whatprovides "$pkg" &>/dev/null || return 1
+      done
+      ;;
+    flatpak) flatpak info "$target" &>/dev/null ;;
+    none) return 1 ;;
+  esac
+}
+
+add() {
+  local name spec kind target failed=0
+  local dnf_pkgs=() flatpaks=()
+  for name in "$@"; do
+    is_present "$name" && continue
+    spec=$(resolve "$name")
+    kind=${spec%%:*}
+    target=${spec#*:}
+    case $kind in
+      dnf) read -ra parts <<<"$target"; dnf_pkgs+=("${parts[@]}") ;;
+      flatpak) flatpaks+=("$target") ;;
+      none)
+        echo -e "\033[33m'$name' has no Fedora package: $target\033[0m" >&2
+        failed=1
+        ;;
+    esac
+  done
+
+  if (( ${#dnf_pkgs[@]} )); then
+    as_root dnf install -y "${dnf_pkgs[@]}" || failed=1
+  fi
+  if (( ${#flatpaks[@]} )); then
+    flatpak_ready && flatpak install --user -y --noninteractive flathub "${flatpaks[@]}" || failed=1
+  fi
+
+  for name in "$@"; do
+    spec=$(resolve "$name")
+    [[ ${spec%%:*} == none ]] && continue
+    if ! is_present "$name"; then
+      echo -e "\033[31mError: Package '$name' did not install\033[0m" >&2
+      failed=1
+    fi
+  done
+  return $failed
+}
+
+drop() {
+  local name spec kind target dnf_pkgs=() flatpaks=()
+  for name in "$@"; do
+    is_present "$name" || continue
+    spec=$(resolve "$name")
+    kind=${spec%%:*}
+    target=${spec#*:}
+    case $kind in
+      dnf) read -ra parts <<<"$target"; dnf_pkgs+=("${parts[@]}") ;;
+      flatpak) flatpaks+=("$target") ;;
+    esac
+  done
+  (( ${#dnf_pkgs[@]} )) && as_root dnf remove -y "${dnf_pkgs[@]}"
+  (( ${#flatpaks[@]} )) && flatpak uninstall --user -y --noninteractive "${flatpaks[@]}"
+  return 0
+}
+
+cmd=${1:-}
+shift || true
+
+case $cmd in
+  resolve)
+    for name in "$@"; do printf '%s\t%s\n' "$name" "$(resolve "$name")"; done
+    ;;
+  present)
+    for name in "$@"; do is_present "$name" || exit 1; done
+    ;;
+  missing)
+    for name in "$@"; do is_present "$name" || exit 0; done
+    exit 1
+    ;;
+  add) add "$@" ;;
+  drop) drop "$@" ;;
+  *)
+    echo "Usage: omarchy-fedora-pkg <resolve|add|present|missing|drop> <packages...>" >&2
+    exit 2
+    ;;
+esac

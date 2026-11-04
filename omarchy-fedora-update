@@ -1,0 +1,51 @@
+#!/bin/bash
+#
+# omarchy-fedora-update: re-sync the Omarchy files on this Fedora machine.
+#
+#   omarchy-fedora-update              re-apply the installed release (repairs files)
+#   omarchy-fedora-update --ref v4.0.7 move to another Omarchy release
+#   omarchy-fedora-update --port       also pull the newest omarchy-fedora port first
+#
+# Your ~/.config files are kept; only files you never had are added.
+# To reset configs to Omarchy's defaults, use: omarchy-reinstall-configs
+#
+# For Fedora package updates (Hyprland, Quickshell, drivers), use omarchy-update.
+
+set -euo pipefail
+
+SHARE=/usr/share/omarchy-fedora
+ref=$(cat "$SHARE/ref" 2>/dev/null || echo v4.0.6)
+args=()
+
+while (($#)); do
+  case $1 in
+    --ref) ref=${2:?--ref needs a tag}; shift 2 ;;
+    --port)
+      if [[ -d $SHARE/port/.git ]]; then
+        sudo git -C "$SHARE/port" pull --ff-only
+      else
+        echo "The installed port is not a git checkout; re-run install.sh from a fresh copy to update it." >&2
+      fi
+      shift
+      ;;
+    -h|--help) sed -n '3,12p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+    *) args+=("$1"); shift ;;
+  esac
+done
+
+if [[ $ref != "$(cat "$SHARE/ref" 2>/dev/null)" ]]; then
+  echo "Switching Omarchy from $(cat "$SHARE/ref" 2>/dev/null || echo unknown) to $ref."
+  echo "Newer Omarchy releases can need a newer Hyprland or Quickshell; run omarchy-update first."
+  if command -v gum >/dev/null; then
+    gum confirm "Continue?" || exit 0
+  else
+    read -rp "Continue? [y/N] " reply
+    [[ $reply =~ ^[Yy] ]] || exit 0
+  fi
+fi
+
+# Run from a temporary copy, since install.sh replaces $SHARE/port itself.
+tmp=$(mktemp -d)
+trap 'rm -rf "$tmp"' EXIT
+cp -a "$SHARE/port/." "$tmp/"
+exec bash "$tmp/install.sh" --update --ref "$ref" --yes "${args[@]}"

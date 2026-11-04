@@ -1,0 +1,40 @@
+#!/bin/bash
+
+# omarchy:summary=Offer a reboot or restart when the update needs one (Fedora port)
+# omarchy:hidden=true
+
+echo
+
+confirm_reboot() {
+  gum confirm "$1" && { omarchy-system-reboot; exit 0; }
+}
+
+running_kernel=$(uname -r)
+newest_kernel=$(rpm -q kernel-core --qf '%{VERSION}-%{RELEASE}.%{ARCH}\n' 2>/dev/null | sort -V | tail -n1)
+
+if [[ -n $newest_kernel && $newest_kernel != "$running_kernel" ]]; then
+  if rpm -q akmod-nvidia &>/dev/null && ! omarchy-fedora-nvidia-check "$newest_kernel" >/dev/null; then
+    echo -e "\e[31mA new kernel is installed but its NVIDIA module is not ready. Skipping the reboot prompt.\e[0m"
+    exit 0
+  fi
+  confirm_reboot "Linux kernel has been updated. Reboot?"
+elif [[ -f $HOME/.local/state/omarchy/reboot-required ]]; then
+  confirm_reboot "Updates require reboot. Ready?"
+elif command -v needs-restarting >/dev/null && ! needs-restarting -r &>/dev/null; then
+  confirm_reboot "Core system packages were updated. Reboot?"
+fi
+
+running_hyprland=$(readlink "/proc/$(pgrep -x Hyprland | head -n1)/exe" 2>/dev/null)
+if [[ $running_hyprland == *"(deleted)"* ]]; then
+  confirm_reboot "Hyprland has been updated. Reboot?"
+fi
+
+for file in "$HOME"/.local/state/omarchy/restart-*-required; do
+  if [[ -f $file ]]; then
+    filename=$(basename "$file")
+    service=$(echo "$filename" | sed 's/restart-\(.*\)-required/\1/')
+    echo "Restarting $service"
+    omarchy-state clear "$filename" 2>/dev/null || rm -f "$file"
+    omarchy-restart-"$service" 2>/dev/null || true
+  fi
+done

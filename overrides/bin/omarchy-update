@@ -1,0 +1,49 @@
+#!/bin/bash
+
+# omarchy:summary=Update the system (Fedora port: dnf + Flathub, with an NVIDIA driver check before reboot)
+# omarchy:args=[-y]
+# omarchy:requires-sudo=true
+
+set -e
+
+if [[ -z ${OMARCHY_UPDATE_LOGGED:-} ]]; then
+  script_command=$(printf '%q ' "$0" "$@")
+  exec env OMARCHY_UPDATE_LOGGED=1 script -qefc "$script_command" "/tmp/omarchy-update.log"
+fi
+
+trap 'echo ""; echo -e "\033[0;31mSomething went wrong during the update.\n\nReview the output above (also saved to /tmp/omarchy-update.log), fix the error, and retry.\033[0m"' ERR
+
+if [[ ${1:-} != "-y" ]]; then
+  gum confirm "Update Fedora packages and Flatpaks now?" || exit 0
+fi
+
+source omarchy-sudo-keepalive 2>/dev/null || sudo -v
+
+# Optional rollback point. Exits 127 when snapper is not installed, which is fine.
+omarchy-snapshot create || (($? == 127)) ||
+  echo -e "\e[33mContinuing the update without a snapshot.\e[0m" >&2
+
+kernels_before=$(rpm -q kernel-core --qf '%{VERSION}-%{RELEASE}.%{ARCH}\n' 2>/dev/null | sort -V | tail -n1)
+
+echo -e "\e[32mUpdating Fedora packages\e[0m"
+sudo dnf upgrade --refresh -y
+
+if command -v flatpak >/dev/null; then
+  echo -e "\n\e[32mUpdating Flatpaks\e[0m"
+  flatpak update -y --noninteractive || true
+  sudo flatpak update -y --noninteractive || true
+fi
+
+kernels_after=$(rpm -q kernel-core --qf '%{VERSION}-%{RELEASE}.%{ARCH}\n' 2>/dev/null | sort -V | tail -n1)
+
+# The NVIDIA kernel module is rebuilt by akmods for each new kernel. Rebooting
+# before that build finishes is the classic "apps won't open after an update".
+if [[ $kernels_after != "$kernels_before" ]] && rpm -q akmod-nvidia &>/dev/null; then
+  omarchy-fedora-nvidia-check --wait "$kernels_after"
+fi
+
+omarchy-hook post-update 2>/dev/null || true
+omarchy-update-status 2>/dev/null || true
+
+trap - ERR
+omarchy-update-restart

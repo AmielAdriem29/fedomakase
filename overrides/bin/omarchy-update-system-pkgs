@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# omarchy:summary=Update system packages with dnf (Fedora port)
+# omarchy:requires-sudo=true
+
+set -e
+sudo dnf upgrade --refresh -y

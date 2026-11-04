@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# omarchy:summary=Turn off fingerprint authentication (Fedora port: keeps fprintd installed for KDE)
+# omarchy:requires-sudo=true
+
+set -e
+
+echo -e "\e[32mRemoving fingerprint scanner from authentication.\n\e[0m"
+
+if command -v authselect >/dev/null && authselect current 2>/dev/null | grep -q with-fingerprint; then
+  sudo authselect disable-feature with-fingerprint
+  sudo authselect apply-changes
+fi
+
+sudo rm -f /etc/pam.d/omarchy-lock-fingerprint
+
+# fprintd stays installed: other Fedora desktops (KDE) depend on it.
+echo -e "\e[32mFingerprint authentication has been turned off.\e[0m"

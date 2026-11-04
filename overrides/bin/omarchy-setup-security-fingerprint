@@ -1,0 +1,47 @@
+#!/bin/bash
+
+# omarchy:summary=Set up fingerprint login, sudo and lock screen (Fedora port: fprintd + authselect)
+# omarchy:requires-sudo=true
+
+set -e
+
+echo -e "\e[32mSetting up fingerprint scanner for authentication.\n\e[0m"
+
+if ! omarchy-hw-fingerprint; then
+  echo -e "\e[31mNo fingerprint sensor detected.\e[0m"
+  exit 1
+fi
+
+if ! rpm -q fprintd fprintd-pam usbutils &>/dev/null; then
+  echo "Installing required packages..."
+  sudo dnf install -y fprintd fprintd-pam usbutils
+fi
+
+echo -e "\e[32m\nLet's set up your right index finger as the first fingerprint.\e[0m"
+echo -e "Keep moving the finger around on the sensor until the process completes.\n"
+
+if ! sudo fprintd-enroll "$USER"; then
+  echo -e "\e[31m\nEnrollment failed. Please try again.\e[0m"
+  exit 1
+fi
+echo -e "\e[32m\nFingerprint enrolled successfully!\e[0m"
+echo -e "\nNow let's verify that it's working correctly.\n"
+
+if ! fprintd-verify; then
+  echo -e "\e[31m\nVerification failed. You may want to try enrolling again.\e[0m"
+  exit 1
+fi
+
+# Fedora manages PAM with authselect: one feature flag covers login, sudo and polkit.
+if command -v authselect >/dev/null; then
+  sudo authselect enable-feature with-fingerprint
+  sudo authselect apply-changes
+fi
+
+sudo tee /etc/pam.d/omarchy-lock-fingerprint >/dev/null <<'EOF'
+auth       required                    pam_fprintd.so
+account    include                     system-auth
+EOF
+
+echo -e "\e[32m\nPerfect! Fingerprint authentication is now configured.\e[0m"
+echo "You can use your fingerprint for sudo, polkit, and the lock screen (Super + Ctrl + L)."

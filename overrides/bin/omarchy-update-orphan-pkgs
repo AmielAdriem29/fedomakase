@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# omarchy:summary=Remove packages nothing depends on anymore (Fedora port: dnf autoremove)
+# omarchy:requires-sudo=true
+
+# dnf asks before removing anything, so the list can be reviewed.
+sudo dnf autoremove

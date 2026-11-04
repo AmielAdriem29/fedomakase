@@ -1,0 +1,13 @@
+#!/bin/bash
+# Fedora port shim, installed only when uwsm is not available.
+# Covers the two uwsm calls Omarchy makes outside of session start.
+
+case ${1:-} in
+  stop) exec hyprctl dispatch exit ;;
+  app) shift; exec uwsm-app "$@" ;;
+  check) exit 1 ;;
+  *)
+    echo "uwsm is not installed; the Omarchy session runs Hyprland directly. Install it with: sudo dnf install uwsm" >&2
+    exit 1
+    ;;
+esac

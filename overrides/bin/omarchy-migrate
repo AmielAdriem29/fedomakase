@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# omarchy:summary=Run pending Omarchy migrations (Fedora port: no-op)
+# omarchy:args=[--pending]
+#
+# Upstream migrations repair Arch installs between releases (pacman, Limine,
+# mkinitcpio). The Fedora port marks them all done at install time and
+# re-applies configs with omarchy-fedora-update instead.
+
+if [[ ${1:-} == "--pending" || ${1:-} == "--check" ]]; then
+  exit 1
+fi
+exit 0

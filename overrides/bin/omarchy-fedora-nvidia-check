@@ -1,0 +1,39 @@
+#!/bin/bash
+
+# omarchy:summary=Check that the NVIDIA kernel module is built for the newest (or given) kernel
+# omarchy:args=[--wait] [kernel-version]
+#
+# Exit 0 when the module exists for the kernel, 1 when it does not.
+# --wait builds it with akmods first (this is what you want right after an update).
+
+set -uo pipefail
+
+wait_build=0
+if [[ ${1:-} == "--wait" ]]; then
+  wait_build=1
+  shift
+fi
+
+kernel=${1:-$(rpm -q kernel-core --qf '%{VERSION}-%{RELEASE}.%{ARCH}\n' 2>/dev/null | sort -V | tail -n1)}
+
+if ! rpm -q akmod-nvidia &>/dev/null; then
+  echo "akmod-nvidia is not installed; nothing to check."
+  exit 0
+fi
+
+has_module() { modinfo -k "$kernel" nvidia &>/dev/null; }
+
+if (( wait_build )) && ! has_module; then
+  echo -e "\n\e[32mBuilding the NVIDIA module for kernel $kernel (this can take a few minutes)\e[0m"
+  sudo akmods --force --kernels "$kernel" || true
+fi
+
+if has_module; then
+  echo -e "\e[32mNVIDIA module ready for $kernel ($(modinfo -k "$kernel" -F version nvidia 2>/dev/null)).\e[0m"
+  exit 0
+fi
+
+echo -e "\e[31mThe NVIDIA module is NOT built for kernel $kernel.\e[0m"
+echo "Do not reboot yet. Try: sudo akmods --force --kernels $kernel"
+echo "If it keeps failing, boot the previous kernel from the GRUB menu and check: sudo journalctl -u akmods"
+exit 1

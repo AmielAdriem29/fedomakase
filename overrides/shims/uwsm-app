@@ -1,0 +1,12 @@
+#!/bin/bash
+# Fedora port shim, installed only when uwsm is not available.
+# Omarchy launches every app through `uwsm-app -- <command>`; without uwsm,
+# run the command in its own systemd scope so it still outlives the launcher.
+
+while [[ $# -gt 0 && $1 != "--" ]]; do
+  shift  # uwsm-app options (-s, -t, ...) have no meaning here
+done
+[[ ${1:-} == "--" ]] && shift
+(( $# )) || exit 1
+
+exec systemd-run --user --scope --quiet --collect -- "$@"

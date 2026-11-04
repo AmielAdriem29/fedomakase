@@ -1,0 +1,29 @@
+#!/bin/bash
+
+# omarchy:summary=Show a fuzzy-finder TUI for picking Flathub apps to install (Fedora port: stands in for the AUR).
+
+if ! command -v flatpak >/dev/null; then
+  sudo dnf install -y flatpak || exit 1
+fi
+flatpak remote-list --columns=name | grep -qx flathub ||
+  flatpak remote-add --user --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+
+fzf_args=(
+  --multi
+  --delimiter '\t'
+  --with-nth '2,3'
+  --preview 'flatpak remote-info flathub {1} 2>/dev/null'
+  --preview-label='alt-p: toggle description, tab: multi-select'
+  --preview-label-pos='bottom'
+  --preview-window 'down:50%:wrap'
+  --bind 'alt-p:toggle-preview'
+  --color 'pointer:green,marker:green'
+)
+
+app_ids=$(flatpak remote-ls --app --columns=application,name,description flathub 2>/dev/null |
+  fzf "${fzf_args[@]}" | cut -f1)
+
+if [[ -n $app_ids ]]; then
+  echo "$app_ids" | tr '\n' ' ' | xargs flatpak install --user -y flathub
+  omarchy-show-done
+fi

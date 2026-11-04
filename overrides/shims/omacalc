@@ -1,0 +1,12 @@
+#!/bin/bash
+# Fedora port shim: Omarchy's calculator (omacalc) is Arch-only. Use GNOME
+# Calculator or Qalculate, whichever is installed.
+
+for calc in gnome-calculator qalculate-qt qalculate-gtk kcalc; do
+  if command -v "$calc" >/dev/null; then
+    exec "$calc" "$@"
+  fi
+done
+
+notify-send "No calculator installed" "sudo dnf install gnome-calculator" 2>/dev/null
+exit 1

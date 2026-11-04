@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# omarchy:summary=Print the current Omarchy release channel (Fedora port: always the pinned release)
+# omarchy:hidden=true
+
+echo stable
