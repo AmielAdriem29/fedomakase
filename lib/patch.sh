@@ -199,7 +199,7 @@ EOF
 
   # 11. Fedora logo in fastfetch and the Omarchy menu. Icons are spelled as
   #     UTF-8 bytes so they survive editors and don't depend on the locale.
-  local arch_icon=$'\xf3\xb0\xa3\x87' omarchy_icon=$'\xee\xa4\x80' fedora_icon=$'\xef\x8c\x8a'
+  local arch_icon=$'\xf3\xb0\xa3\x87' omarchy_icon=$'\xee\xa4\x80' fedora_icon=$'\xef\x8c\x8a' package_icon=$'\xf3\xb0\x8f\x96'
   local menu="$src/default/omarchy/omarchy-menu.jsonc"
   cp "$src/icon.txt" "$src/icon-omarchy.txt"   # lets the installer spot an untouched logo
   cp "$PORT_DIR/overrides/branding/about.txt" "$src/icon.txt"
@@ -224,6 +224,11 @@ EOF
     "\"learn.arch\": {\"icon\":\"$fedora_icon\",\"label\":\"Fedora\",\"action\":\"omarchy-launch-webapp 'https://docs.fedoraproject.org/'\"}" \
     "learn menu entry"
   patch_literal "$menu" "\"icon\":\"$arch_icon\"" "\"icon\":\"$fedora_icon\"" "menu package icons"
+  # The AUR entry opens a Flathub picker here (see omarchy-pkg-aur-install).
+  patch_literal "$menu" \
+    "\"install.aur\": {\"icon\":\"$fedora_icon\",\"label\":\"AUR\"," \
+    "\"install.aur\": {\"icon\":\"$package_icon\",\"label\":\"Flathub\"," \
+    "menu Flathub label"
   patch_literal "$menu" \
     "\"update.omarchy\": {\"icon\":\"$omarchy_icon\",\"iconFont\":\"omarchy\"," \
     "\"update.omarchy\": {\"icon\":\"$fedora_icon\"," \
