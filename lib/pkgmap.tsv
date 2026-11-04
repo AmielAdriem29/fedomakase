@@ -12,7 +12,7 @@
 # Renamed packages
 fd	dnf:fd-find
 imagemagick	dnf:ImageMagick
-libvips	dnf:vips
+libvips	dnf:vips vips-tools
 nvim	dnf:neovim
 neovim	dnf:neovim
 python-gobject	dnf:python3-gobject
@@ -86,7 +86,7 @@ minecraft-launcher	flatpak:com.mojang.Minecraft
 bitwarden	flatpak:com.bitwarden.desktop
 1password	flatpak:com.onepassword.OnePassword
 1password-beta	flatpak:com.onepassword.OnePassword
-visual-studio-code-bin	flatpak:com.visualstudio.code
+visual-studio-code-bin	repo:/usr/share/omarchy-fedora/port/overrides/repos/vscode.repo code
 zed	flatpak:dev.zed.Zed
 typora	flatpak:io.typora.Typora
 pinta	flatpak:com.github.PintaProject.Pinta
@@ -198,6 +198,8 @@ sunshine	flatpak:dev.lizardbyte.app.Sunshine
 
 # Omarchy install menu: COPR
 ghostty	copr:scottames/ghostty ghostty
+lazygit	copr:dejan/lazygit lazygit
+starship	copr:atim/starship starship
 xpadneo-dkms	copr:shdwchn10/xpadneo akmod-xpadneo
 supergfxctl	copr:lukenukem/asus-linux supergfxctl
 

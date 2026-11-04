@@ -649,7 +649,8 @@ install_user_configs() {
   find "$d/applications" -maxdepth 2 -name '*.desktop' -exec cp -f {} "$HOME/.local/share/applications/" \;
 
   mkdir -p "$HOME/.config/omarchy/branding" "$HOME/.local/state/omarchy/toggles/hypr" \
-    "$HOME/.local/share/nautilus-python/extensions"
+    "$HOME/.local/share/nautilus-python/extensions" \
+    "$HOME/.local/share/flatpak/exports/share/applications"   # the shell only watches folders that exist at startup
   [[ -f $HOME/.config/omarchy/branding/screensaver.txt ]] || cp "$d/logo.txt" "$HOME/.config/omarchy/branding/screensaver.txt"
   # Swap in the Fedora logo unless you set your own About logo.
   if [[ ! -f $HOME/.config/omarchy/branding/about.txt ]] || cmp -s "$HOME/.config/omarchy/branding/about.txt" "$d/icon-omarchy.txt"; then

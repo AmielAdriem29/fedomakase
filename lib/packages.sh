@@ -63,6 +63,7 @@ DESKTOP_PACKAGES=(
   fontawesome-6-free-fonts fontawesome-6-brands-fonts
   gnome-calculator          # SUPER+CTRL+Q (omacalc shim)
   fprintd fprintd-pam
+  vips-tools                # vipsthumbnail: the background and image pickers need it
 )
 
 # Command-line tools Omarchy's shell config and TUIs expect.

@@ -197,6 +197,17 @@ EOF
     "omarchy-pkg-add lutris wine-staging" \
     "lutris without umu-launcher"
 
+  # 10b. Snapshots: Fedora boots with GRUB, so there is no snapshot boot menu
+  #      and no limine-snapper-restore.
+  patch_literal "$src/bin/omarchy-snapshot" \
+    'echo "Snapshots can be selected during boot."' \
+    'echo "List snapshots with: sudo snapper -c root list"' \
+    "snapshot message"
+  patch_literal "$src/bin/omarchy-snapshot" \
+    '  sudo limine-snapper-restore' \
+    '  echo "Fedora has no snapshot boot menu. Restore files with: sudo snapper -c root undochange <id>..0" >&2; exit 1' \
+    "snapshot restore"
+
   # 11. Fedora logo in fastfetch and the Omarchy menu. Icons are spelled as
   #     UTF-8 bytes so they survive editors and don't depend on the locale.
   local arch_icon=$'\xf3\xb0\xa3\x87' omarchy_icon=$'\xee\xa4\x80' fedora_icon=$'\xef\x8c\x8a' package_icon=$'\xf3\xb0\x8f\x96'
