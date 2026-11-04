@@ -28,7 +28,7 @@ Useful options:
 
 ## What gets installed
 
-- **Hyprland** from COPR `ashbuk/Hyprland-Fedora` and **Quickshell** from COPR `errornointernet/quickshell`. Fedora dropped Hyprland from its own repos after Fedora 42. The installer refuses a Hyprland older than 0.55, because Omarchy 4 is written in Hyprland's Lua config.
+- **Hyprland**, uwsm, Satty and the hypr* tools from COPR `nett00n/hyprland` and **Quickshell** from COPR `errornointernet/quickshell`. Fedora dropped Hyprland from its own repos after Fedora 42. The installer refuses a Hyprland older than 0.55, because Omarchy 4 is written in Hyprland's Lua config.
 - **Omarchy** into `/usr/share/omarchy`, with its commands linked as `/usr/bin/omarchy-*`, the same layout as the Arch package.
 - **Configs** into `~/.config`. Only `hypr/` and `omarchy/` replace existing files. Everything else (git, Chromium profile, tmux, starship) is added only if you don't already have it. Replaced files go to `~/.local/state/omarchy-fedora/backup-*`.
 - A **login session** at `/usr/share/wayland-sessions/omarchy.desktop`.

@@ -2,7 +2,8 @@
 # Names here are Fedora names. Arch names used by Omarchy's own scripts are
 # translated at runtime through pkgmap.tsv.
 
-# From the Hyprland COPR. hyprlock and hypridle come along as subpackages.
+# From the Hyprland COPR, which also carries uwsm, satty and the hypr* tools below.
+# hyprlock and hypridle are not needed: Omarchy 4 locks and idles through Quickshell.
 HYPR_PACKAGES=(
   hyprland
   xdg-desktop-portal-hyprland

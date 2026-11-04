@@ -30,7 +30,7 @@ source "$PORT_DIR/lib/patch.sh"
 
 OMARCHY_REPO=${OMARCHY_REPO:-https://github.com/basecamp/omarchy.git}
 OMARCHY_REF=${OMARCHY_REF:-v4.0.6}
-HYPR_COPR=${HYPR_COPR:-ashbuk/Hyprland-Fedora}
+HYPR_COPR=${HYPR_COPR:-nett00n/hyprland}
 QS_COPR=${QS_COPR:-errornointernet/quickshell}
 QS_REPO=${QS_REPO:-https://git.outfoxxed.me/quickshell/quickshell.git}
 QS_COMMIT=${QS_COMMIT:-2b4501a282689792b62e94f3fb30d8f512324fe6}   # what Omarchy builds

@@ -62,6 +62,7 @@ sudo systemctl daemon-reload
 
 if (( remove_packages )); then
   sudo dnf remove -y hyprland xdg-desktop-portal-hyprland quickshell quickshell-git 2>/dev/null
+  sudo dnf copr disable -y nett00n/hyprland 2>/dev/null
   sudo dnf copr disable -y ashbuk/Hyprland-Fedora 2>/dev/null
   sudo dnf copr disable -y errornointernet/quickshell 2>/dev/null
 fi
