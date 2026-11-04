@@ -31,8 +31,8 @@ as_root() {
 
 flatpak_ready() {
   command -v flatpak >/dev/null || as_root dnf install -y flatpak || return 1
-  flatpak remote-list --columns=name 2>/dev/null | grep -qx flathub ||
-    flatpak remote-add --user --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+  # Apps install per user, so Fedora's system-wide flathub remote doesn't count.
+  flatpak remote-add --user --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 }
 
 # A COPR target is "<owner/project> <names...>"; prints just the names.

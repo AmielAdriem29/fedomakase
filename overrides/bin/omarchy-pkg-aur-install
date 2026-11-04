@@ -5,14 +5,14 @@
 if ! command -v flatpak >/dev/null; then
   sudo dnf install -y flatpak || exit 1
 fi
-flatpak remote-list --columns=name | grep -qx flathub ||
-  flatpak remote-add --user --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+# Apps install per user, so Fedora's system-wide flathub remote doesn't count.
+flatpak remote-add --user --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 
 fzf_args=(
   --multi
   --delimiter '\t'
   --with-nth '2,3'
-  --preview 'flatpak remote-info flathub {1} 2>/dev/null'
+  --preview 'flatpak remote-info --user flathub {1} 2>/dev/null'
   --preview-label='alt-p: toggle description, tab: multi-select'
   --preview-label-pos='bottom'
   --preview-window 'down:50%:wrap'
@@ -20,7 +20,7 @@ fzf_args=(
   --color 'pointer:green,marker:green'
 )
 
-app_ids=$(flatpak remote-ls --app --columns=application,name,description flathub 2>/dev/null |
+app_ids=$(flatpak remote-ls --user --app --columns=application,name,description flathub 2>/dev/null |
   fzf "${fzf_args[@]}" | cut -f1)
 
 if [[ -n $app_ids ]]; then
