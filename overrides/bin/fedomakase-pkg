@@ -153,7 +153,7 @@ case $cmd in
   add) add "$@" ;;
   drop) drop "$@" ;;
   *)
-    echo "Usage: omarchy-fedora-pkg <resolve|add|present|missing|drop> <packages...>" >&2
+    echo "Usage: fedomakase-pkg <resolve|add|present|missing|drop> <packages...>" >&2
     exit 2
     ;;
 esac

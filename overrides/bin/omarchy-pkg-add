@@ -5,4 +5,4 @@
 # omarchy:examples=omarchy pkg add jq ripgrep
 # omarchy:requires-sudo=true
 
-exec omarchy-fedora-pkg add "$@"
+exec fedomakase-pkg add "$@"

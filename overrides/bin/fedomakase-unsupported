@@ -10,7 +10,7 @@ name=$(basename "$0")
 echo -e "\033[33m$name is Arch-specific (bootloader, pacman, Plymouth or SDDM) and is disabled on the Fedora port.\033[0m" >&2
 case $name in
   omarchy-channel-set|omarchy-upgrade-to-quattro|omarchy-reinstall|omarchy-reinstall-pkgs)
-    echo "To move to another Omarchy release, run: omarchy-fedora-update --ref <tag>" >&2 ;;
+    echo "To move to another Omarchy release, run: fedomakase-update --ref <tag>" >&2 ;;
   omarchy-hibernation-available)
     exit 1 ;;
 esac

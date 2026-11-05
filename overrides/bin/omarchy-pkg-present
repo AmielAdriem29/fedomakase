@@ -3,4 +3,4 @@
 # omarchy:summary=Returns true if all of the named packages are installed on the system (or false if any of them are missing).
 # omarchy:args=<packages...>
 
-exec omarchy-fedora-pkg present "$@"
+exec fedomakase-pkg present "$@"

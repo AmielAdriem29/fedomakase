@@ -1,11 +1,11 @@
 #!/bin/bash
 #
-# omarchy-fedora: install Omarchy's Hyprland desktop on top of an existing
+# Fedomakase: install Omarchy's Hyprland desktop on top of an existing
 # Fedora system (tested target: Fedora KDE 44 on an Acer Nitro 5 AN515-58).
 #
 # It installs upstream Omarchy at a pinned release into /usr/share/omarchy,
 # swaps the Arch-only pieces (pacman, AUR, Limine, Plymouth, SDDM) for Fedora
-# equivalents, and adds an "Omarchy" session to your login screen. KDE stays
+# equivalents, and adds a "Fedomakase" session to your login screen. KDE stays
 # installed and untouched as a fallback session.
 #
 # Usage: ./install.sh [options]
@@ -126,7 +126,7 @@ confirm() {
   (( opt_yes )) && return 0
   cat <<EOF
 
-This will install Omarchy $OMARCHY_REF as an extra "Omarchy" session next to KDE:
+This will install Fedomakase (Omarchy $OMARCHY_REF) as an extra session next to KDE:
   - Hyprland from COPR $HYPR_COPR, Quickshell from COPR $QS_COPR (or a source build)
   - Omarchy itself into /usr/share/omarchy, commands as /usr/bin/omarchy-*
   - Omarchy's configs into ~/.config (existing files are backed up first)
@@ -214,7 +214,7 @@ build_quickshell() {
     -DCMAKE_INSTALL_PREFIX=/usr \
     -DINSTALL_QML_PREFIX=lib64/qt6/qml \
     -DCRASH_REPORTER=OFF \
-    -DDISTRIBUTOR="omarchy-fedora" >>"$OF_LOG" 2>&1 || die "Quickshell configure failed (missing -devel package?). See $OF_LOG"
+    -DDISTRIBUTOR="fedomakase" >>"$OF_LOG" 2>&1 || die "Quickshell configure failed (missing -devel package?). See $OF_LOG"
   cmake --build "$src/build" >>"$OF_LOG" 2>&1 || die "Quickshell build failed. See $OF_LOG"
   sudo cmake --install "$src/build" >>"$OF_LOG" 2>&1 || die "Quickshell install failed"
   sudo cp "$src/build/install_manifest.txt" "$OF_SHARE/quickshell-install-manifest.txt"
@@ -280,7 +280,7 @@ install_nvidia_driver() {
     die "Could not install akmod-nvidia"
   info "Building the kernel module now so the first reboot works"
   sudo akmods --force >>"$OF_LOG" 2>&1 || true
-  omarchy_check=$PORT_DIR/overrides/bin/omarchy-fedora-nvidia-check
+  omarchy_check=$PORT_DIR/overrides/bin/fedomakase-nvidia-check
   bash "$omarchy_check" || warn "The NVIDIA module is not built yet. Don't reboot until 'modinfo nvidia' works."
 }
 
@@ -324,24 +324,25 @@ install_omarchy_tree() {
 
   # /usr/bin/omarchy-* -> /usr/share/omarchy/bin/*, like the Arch package.
   local bin name
-  for bin in "$OMARCHY_DEST"/bin/omarchy*; do
+  for bin in "$OMARCHY_DEST"/bin/omarchy* "$OMARCHY_DEST"/bin/fedomakase*; do
     name=$(basename "$bin")
     sudo ln -sfn "$OMARCHY_DEST/bin/$name" "/usr/bin/$name"
   done
   # Drop links for commands that no longer exist in this release.
-  for bin in /usr/bin/omarchy-*; do
+  for bin in /usr/bin/omarchy-* /usr/bin/fedomakase-*; do
     [[ -L $bin && ! -e $bin ]] && sudo rm -f "$bin"
   done
 
-  # Keep a copy of the port so omarchy-fedora-update can re-run it.
+  # Keep a copy of the port so fedomakase-update can re-run it.
   sudo rsync -a --delete --exclude .git "$PORT_DIR/" "$OF_SHARE/port/" 2>>"$OF_LOG" ||
     { sudo rm -rf "$OF_SHARE/port"; sudo cp -a "$PORT_DIR" "$OF_SHARE/port"; }
   sudo install -m644 "$PORT_DIR/lib/pkgmap.tsv" "$OF_SHARE/pkgmap.tsv"
   local described
   described=$(git -C "$OMARCHY_SRC" describe --tags 2>/dev/null || echo "$OMARCHY_REF")
-  echo "${described#v} (fedora)" | sudo tee "$OF_SHARE/version" >/dev/null
+  echo "${described#v} (fedomakase)" | sudo tee "$OF_SHARE/version" >/dev/null
   echo "$OMARCHY_REF" | sudo tee "$OF_SHARE/ref" >/dev/null
-  sudo ln -sfn "$OF_SHARE/port/omarchy-fedora-update" /usr/bin/omarchy-fedora-update
+  sudo ln -sfn "$OF_SHARE/port/fedomakase-update" /usr/bin/fedomakase-update
+  sudo ln -sfn fedomakase-update /usr/bin/omarchy-fedora-update   # old name
 
   if [[ -x $OMARCHY_DEST/bin/omarchy-hyprland-reload-guard ]]; then
     sudo "$OMARCHY_DEST/bin/omarchy-hyprland-reload-guard" resume >/dev/null 2>&1 || true
@@ -482,21 +483,21 @@ install_system_files() {
 }
 
 install_session() {
-  step "Adding the Omarchy session to the login screen"
+  step "Adding the Fedomakase session to the login screen"
   install_sys 755 "$PORT_DIR/overrides/session/start-omarchy" "$OF_SHARE/start-omarchy"
   local session=/usr/share/wayland-sessions/omarchy.desktop
   sudo install -d -m755 /usr/share/wayland-sessions
   sudo tee "$session" >/dev/null <<EOF
 [Desktop Entry]
-Name=Omarchy
-Comment=Omarchy's Hyprland desktop (Fedora port)
+Name=Fedomakase
+Comment=Omarchy's Hyprland desktop on Fedora
 Exec=$OF_SHARE/start-omarchy
 TryExec=Hyprland
 Type=Application
 DesktopNames=Hyprland
 EOF
   manifest_add "$session"
-  ok "Pick \"Omarchy\" in the session menu on the login screen"
+  ok "Pick \"Fedomakase\" in the session menu on the login screen"
 }
 
 # -------------------------------------------------------------------- GPU --
@@ -651,7 +652,10 @@ install_user_configs() {
   mkdir -p "$HOME/.config/omarchy/branding" "$HOME/.local/state/omarchy/toggles/hypr" \
     "$HOME/.local/share/nautilus-python/extensions" \
     "$HOME/.local/share/flatpak/exports/share/applications"   # the shell only watches folders that exist at startup
-  [[ -f $HOME/.config/omarchy/branding/screensaver.txt ]] || cp "$d/logo.txt" "$HOME/.config/omarchy/branding/screensaver.txt"
+  # Swap in the Fedomakase logo unless you set your own screensaver.
+  if [[ ! -f $HOME/.config/omarchy/branding/screensaver.txt ]] || cmp -s "$HOME/.config/omarchy/branding/screensaver.txt" "$d/logo-omarchy.txt"; then
+    cp "$d/logo.txt" "$HOME/.config/omarchy/branding/screensaver.txt"
+  fi
   # Swap in the Fedora logo unless you set your own About logo.
   if [[ ! -f $HOME/.config/omarchy/branding/about.txt ]] || cmp -s "$HOME/.config/omarchy/branding/about.txt" "$d/icon-omarchy.txt"; then
     cp "$d/icon.txt" "$HOME/.config/omarchy/branding/about.txt"
@@ -734,15 +738,15 @@ final_checks() {
 }
 
 summary() {
-  printf '\n%sOmarchy %s is installed.%s\n\n' "$c_grn" "$OMARCHY_REF" "$c_off"
+  printf '\n%sFedomakase (Omarchy %s) is installed.%s\n\n' "$c_grn" "$OMARCHY_REF" "$c_off"
   cat <<EOF
 Next:
   1. Log out of KDE.
-  2. On the login screen, pick the "Omarchy" session, then log in.
+  2. On the login screen, pick the "Fedomakase" session, then log in.
   3. Press SUPER+K for the keybindings list, SUPER+SPACE for the menu.
 
 Update later with:   omarchy-update            (Fedora packages + NVIDIA check)
-Move to a release:   omarchy-fedora-update --ref <tag>
+Move to a release:   fedomakase-update --ref <tag>
 Undo everything:     $OF_SHARE/port/uninstall.sh
 EOF
   if (( ${#WARNINGS[@]} )); then

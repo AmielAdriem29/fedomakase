@@ -3,4 +3,4 @@
 # omarchy:summary=Returns true if any of the named packages are missing from the system (or false if they're all there).
 # omarchy:args=<packages...>
 
-exec omarchy-fedora-pkg missing "$@"
+exec fedomakase-pkg missing "$@"

@@ -4,4 +4,4 @@
 # omarchy:args=<packages...>
 # omarchy:requires-sudo=true
 
-exec omarchy-fedora-pkg drop "$@"
+exec fedomakase-pkg drop "$@"

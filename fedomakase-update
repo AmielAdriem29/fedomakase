@@ -1,10 +1,10 @@
 #!/bin/bash
 #
-# omarchy-fedora-update: re-sync the Omarchy files on this Fedora machine.
+# fedomakase-update: re-sync the Omarchy files on this Fedora machine.
 #
-#   omarchy-fedora-update              re-apply the installed release (repairs files)
-#   omarchy-fedora-update --ref v4.0.7 move to another Omarchy release
-#   omarchy-fedora-update --port       also pull the newest omarchy-fedora port first
+#   fedomakase-update              re-apply the installed release (repairs files)
+#   fedomakase-update --ref v4.0.7 move to another Omarchy release
+#   fedomakase-update --port       also pull the newest Fedomakase port first
 #
 # Your ~/.config files are kept; only files you never had are added.
 # To reset configs to Omarchy's defaults, use: omarchy-reinstall-configs

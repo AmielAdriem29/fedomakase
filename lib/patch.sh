@@ -4,7 +4,7 @@
 # half-patched.
 
 # Commands that would rewrite the bootloader, initramfs, pacman setup or the
-# login manager. They are replaced with omarchy-fedora-unsupported.
+# login manager. They are replaced with fedomakase-unsupported.
 UNSUPPORTED_BINS=(
   omarchy-apply-pacman
   omarchy-channel-set
@@ -69,12 +69,18 @@ apply_fedora_patches() {
 
   # 1. Port overrides: dnf/flatpak package shims, update flow, version info.
   cp -f "$PORT_DIR"/overrides/bin/* "$src/bin/"
-  chmod 755 "$src"/bin/omarchy-*
+  chmod 755 "$src"/bin/omarchy-* "$src"/bin/fedomakase-*
+
+  # Old command names keep working after the rename to Fedomakase.
+  local old
+  for old in pkg nvidia-check unsupported; do
+    ln -sfn "fedomakase-$old" "$src/bin/omarchy-fedora-$old"
+  done
 
   local bin
   for bin in "${UNSUPPORTED_BINS[@]}"; do
     rm -f "$src/bin/$bin"
-    ln -s omarchy-fedora-unsupported "$src/bin/$bin"
+    ln -s fedomakase-unsupported "$src/bin/$bin"
   done
   for bin in "${NOOP_BINS[@]}"; do
     printf '#!/bin/bash\n# omarchy:hidden=true\n# Fedora port: nothing to do here.\nexit 0\n' >"$src/bin/$bin"
@@ -207,6 +213,35 @@ EOF
     '  sudo limine-snapper-restore' \
     '  echo "Fedora has no snapshot boot menu. Restore files with: sudo snapper -c root undochange <id>..0" >&2; exit 1' \
     "snapshot restore"
+
+  # 10b. The bar's update icon covers all of Fedora, not just Omarchy.
+  patch_literal "$src/shell/plugins/bar/widgets/SystemUpdate.qml" \
+    'tooltipText: "Pending Omarchy Updates"' \
+    'tooltipText: "Pending Fedora Updates"' \
+    "update icon tooltip"
+
+  # 10c. Show the Fedomakase name on the desktop. The Learn menu keeps "Omarchy"
+  #      because it links to Omarchy's manual.
+  patch_literal "$src/etc/fastfetch/config.jsonc" \
+    'echo \"Omarchy $version\"' \
+    'echo \"Fedomakase ${version%% *}\"' \
+    "fastfetch version label"
+  patch_literal "$src/default/hypr/bindings/utilities.lua" \
+    '"Omarchy menu"' \
+    '"Fedomakase menu"' \
+    "keybinding label"
+  patch_literal "$src/default/omarchy/omarchy-menu.jsonc" \
+    '"label":"Omarchy","action":"omarchy-launch-floating-terminal-with-presentation omarchy-update"' \
+    '"label":"Fedomakase","action":"omarchy-launch-floating-terminal-with-presentation omarchy-update"' \
+    "update menu label"
+
+  # 10d. Fedomakase banner above the update terminal, and its window title.
+  cp "$src/logo.txt" "$src/logo-omarchy.txt"   # lets the installer spot an untouched screensaver
+  cp "$PORT_DIR/overrides/branding/logo.txt" "$src/logo.txt"
+  patch_literal "$src/bin/omarchy-launch-floating-terminal-with-presentation" \
+    '--title=Omarchy' \
+    '--title=Fedomakase' \
+    "floating terminal title"
 
   # 11. Fedora logo in fastfetch and the Omarchy menu. Icons are spelled as
   #     UTF-8 bytes so they survive editors and don't depend on the locale.

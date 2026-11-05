@@ -5,7 +5,7 @@
 #
 # Upstream migrations repair Arch installs between releases (pacman, Limine,
 # mkinitcpio). The Fedora port marks them all done at install time and
-# re-applies configs with omarchy-fedora-update instead.
+# re-applies configs with fedomakase-update instead.
 
 if [[ ${1:-} == "--pending" || ${1:-} == "--check" ]]; then
   exit 1

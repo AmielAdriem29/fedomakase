@@ -1,15 +1,24 @@
 #!/bin/bash
 
-# omarchy:summary=Print pending updates and exit 0 when there are any (Fedora port: dnf cache)
+# omarchy:summary=Print pending updates and exit 0 when there are any (Fedora port: dnf + Flathub)
 # omarchy:hidden=true
 
-# Uses dnf's metadata cache (refreshed by dnf-makecache.timer) so the bar widget
-# never triggers a network refresh or needs root.
-updates=$(dnf check-update --cacheonly --quiet 2>/dev/null | awk 'NF == 3 && $1 ~ /\./ { print $1, $2 }')
+# Refreshes this user's dnf cache. dnf-makecache.timer only refreshes root's
+# cache, which a normal user can't read from, so --cacheonly goes stale. Offline,
+# fall back to whatever is cached.
+dnf_output=$(dnf check-update --refresh --quiet 2>/dev/null)
+(($? == 1)) && dnf_output=$(dnf check-update --cacheonly --quiet 2>/dev/null)
+updates=$(awk 'NF == 3 && $1 ~ /\./ { print $1, $2 }' <<<"$dnf_output")
 
-if [[ -n $updates ]]; then
-  count=$(wc -l <<<"$updates")
-  echo "$count Fedora package update(s) available"
+flatpaks=
+if command -v flatpak >/dev/null; then
+  flatpaks=$(timeout 30 flatpak remote-ls --updates --columns=application 2>/dev/null)
+fi
+
+count=$(printf '%s\n%s\n' "$updates" "$flatpaks" | grep -c .)
+
+if ((count > 0)); then
+  echo "$count Fedora package and Flatpak update(s) available"
   exit 0
 fi
 

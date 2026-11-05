@@ -1,9 +1,9 @@
 -- Fedora port additions, loaded right after Omarchy's defaults.
--- This file is yours: edit it freely. `omarchy-fedora-update` never overwrites it.
+-- This file is yours: edit it freely. `fedomakase-update` never overwrites it.
 --
 -- GPU selection for hybrid laptops (Intel iGPU + NVIDIA dGPU) does NOT live
 -- here. Aquamarine reads AQ_DRM_DEVICES before this config is parsed, so the
--- installer writes it to ~/.config/omarchy-fedora/session.env instead, which
+-- installer writes it to /etc/omarchy-fedora/session.env instead, which
 -- the Omarchy session sources before Hyprland starts.
 
 -- Screenshot editor: Omarchy uses Tensaku, which has no Fedora build. The port

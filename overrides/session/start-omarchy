@@ -1,5 +1,5 @@
 #!/bin/bash
-# Session entry point for "Omarchy (Fedora)" on the login screen.
+# Session entry point for "Fedomakase" on the login screen.
 #
 # Loads machine-specific environment (GPU pinning for hybrid laptops) before
 # Hyprland starts, because Aquamarine picks its GPU before any Hyprland config

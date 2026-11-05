@@ -1,6 +1,6 @@
-# omarchy-fedora
+# Fedomakase
 
-A port of [Omarchy](https://github.com/basecamp/omarchy) 4.0.6 (the current stable release) to Fedora 43/44. It installs Omarchy's real Hyprland config, keybinds, Quickshell bar, menus, themes and `omarchy-*` commands on top of your existing Fedora install, as an extra session next to KDE.
+Fedomakase (Fedora + omakase) is a port of [Omarchy](https://github.com/basecamp/omarchy) 4.0.6 (the current stable release) to Fedora 43/44. It installs Omarchy's real Hyprland config, keybinds, Quickshell bar, menus, themes and `omarchy-*` commands on top of your existing Fedora install, as an extra session next to KDE.
 
 It does not rewrite Omarchy. It installs upstream Omarchy at a pinned release tag and replaces only the parts that assume Arch: pacman, the AUR, Limine, Plymouth and SDDM. Everything you see and every keybind is upstream Omarchy.
 
@@ -9,12 +9,12 @@ It does not rewrite Omarchy. It installs upstream Omarchy at a pinned release ta
 Run from KDE (not from a TTY inside Hyprland), as your normal user:
 
 ```bash
-tar xf omarchy-fedora.tar.gz
-cd omarchy-fedora
+tar xf fedomakase.tar.gz
+cd fedomakase
 ./install.sh
 ```
 
-Then log out, choose **Omarchy** in the session menu on the login screen, and log in. `SUPER+K` shows every keybind, `SUPER+SPACE` opens the Omarchy menu.
+Then log out, choose **Fedomakase** in the session menu on the login screen, and log in. `SUPER+K` shows every keybind, `SUPER+SPACE` opens the Omarchy menu.
 
 Useful options:
 
@@ -66,9 +66,11 @@ Omarchy itself already avoids forcing NVIDIA's VA-API driver when the iGPU drive
 ## Keeping it stable
 
 - Update with `omarchy-update` (or the update icon in the bar). After a kernel update it waits for `akmods` to build the NVIDIA module and won't prompt for a reboot until `modinfo nvidia` works for the new kernel. Rebooting before that build finishes is the usual cause of "apps won't open after an update."
+- The update icon appears when Fedora packages or Flatpaks have updates. It checks at login and every 6 hours.
 - If you install `snapper` and configure it for btrfs, `omarchy-update` takes a snapshot before each update, like on Arch.
-- `omarchy-fedora-update` re-syncs Omarchy's files at the installed release. Your `~/.config` edits are kept.
-- `omarchy-fedora-update --ref <tag>` moves to a newer Omarchy release. Newer releases can require a newer Hyprland or Quickshell, so run `omarchy-update` first.
+- `fedomakase-update` re-syncs Omarchy's files at the installed release. Your `~/.config` edits are kept.
+- `fedomakase-update --ref <tag>` moves to a newer Omarchy release. Newer releases can require a newer Hyprland or Quickshell, so run `omarchy-update` first.
+- The old `omarchy-fedora-*` command names still work as aliases.
 
 ## Not included
 

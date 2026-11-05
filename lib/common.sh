@@ -1,6 +1,6 @@
-# Shared helpers for the omarchy-fedora installer. Sourced, not executed.
+# Shared helpers for the Fedomakase installer. Sourced, not executed.
 
-OF_NAME="omarchy-fedora"
+OF_NAME="fedomakase"
 OF_SHARE="${OF_SHARE:-/usr/share/omarchy-fedora}"   # port metadata: manifest, pkgmap, version
 OMARCHY_DEST="${OMARCHY_DEST:-/usr/share/omarchy}"      # where upstream Omarchy expects to live
 

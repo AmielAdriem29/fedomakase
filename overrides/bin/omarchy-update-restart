@@ -13,7 +13,7 @@ running_kernel=$(uname -r)
 newest_kernel=$(rpm -q kernel-core --qf '%{VERSION}-%{RELEASE}.%{ARCH}\n' 2>/dev/null | sort -V | tail -n1)
 
 if [[ -n $newest_kernel && $newest_kernel != "$running_kernel" ]]; then
-  if rpm -q akmod-nvidia &>/dev/null && ! omarchy-fedora-nvidia-check "$newest_kernel" >/dev/null; then
+  if rpm -q akmod-nvidia &>/dev/null && ! fedomakase-nvidia-check "$newest_kernel" >/dev/null; then
     echo -e "\e[31mA new kernel is installed but its NVIDIA module is not ready. Skipping the reboot prompt.\e[0m"
     exit 0
   fi

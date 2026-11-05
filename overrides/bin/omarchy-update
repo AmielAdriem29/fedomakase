@@ -39,7 +39,7 @@ kernels_after=$(rpm -q kernel-core --qf '%{VERSION}-%{RELEASE}.%{ARCH}\n' 2>/dev
 # The NVIDIA kernel module is rebuilt by akmods for each new kernel. Rebooting
 # before that build finishes is the classic "apps won't open after an update".
 if [[ $kernels_after != "$kernels_before" ]] && rpm -q akmod-nvidia &>/dev/null; then
-  omarchy-fedora-nvidia-check --wait "$kernels_after"
+  fedomakase-nvidia-check --wait "$kernels_after"
 fi
 
 omarchy-hook post-update 2>/dev/null || true

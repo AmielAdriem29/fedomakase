@@ -23,14 +23,14 @@ done
 
 (( EUID != 0 )) || { echo "Run as your normal user." >&2; exit 1; }
 
-echo "This removes Omarchy from /usr/share/omarchy, its /usr/bin commands, the login"
+echo "This removes Fedomakase from /usr/share/omarchy, its /usr/bin commands, the login"
 echo "session and the system files the port installed."
 read -rp "Continue? [y/N] " reply
 [[ $reply =~ ^[Yy] ]] || exit 0
 sudo -v || exit 1
 
 # Commands: only symlinks that point into Omarchy's tree.
-for link in /usr/bin/omarchy*; do
+for link in /usr/bin/omarchy* /usr/bin/fedomakase*; do
   [[ -L $link ]] || continue
   case $(readlink "$link") in
     /usr/share/omarchy/*|/usr/share/omarchy-fedora/*) sudo rm -f "$link" ;;
@@ -90,4 +90,4 @@ if (( remove_configs )); then
   echo "Moved Omarchy configs to $backup"
 fi
 
-echo "Omarchy has been removed. Log out and pick Plasma on the login screen."
+echo "Fedomakase has been removed. Log out and pick Plasma on the login screen."
